@@ -1,24 +1,34 @@
-# Dockerfile for building the ASR image.
+# ✅ Base image with CUDA 12.8 and cuDNN support
+FROM nvidia/cuda:12.8.0-cudnn-devel-ubuntu22.04
 
+# ✅ Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1
 
-# The base image, an example deep learning VM.
-# For a full list, see https://us-docker.pkg.dev/deeplearning-platform-release/gcr.io/
-# For info, see https://cloud.google.com/deep-learning-vm/docs/images#supported-frameworks
-FROM python:3.12-slim
-
-# Configures settings for the image.
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PIP_ROOT_USER_ACTION=ignore
+# ✅ Set working directory
 WORKDIR /workspace
 
-# Installs your dependencies.
-RUN pip install -U pip
+# ✅ Install Python 3.10 and required tools
+RUN apt-get update && apt-get install -y \
+    python3.10 python3.10-venv python3.10-distutils ffmpeg libsndfile1 curl git \
+    && ln -sf /usr/bin/python3.10 /usr/bin/python \
+    && curl -sS https://bootstrap.pypa.io/get-pip.py | python
+
+# ✅ Install PyTorch 2.7.0 with CUDA 12.8 support manually
+RUN pip install --upgrade pip
+RUN pip install torch==2.7.0+cu128 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128
+
+# ✅ Install Python dependencies (excluding torch to avoid conflicts)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copies your source files.
+# ✅ Copy application source code and model directory
 COPY src .
+COPY Faster/ ./Faster/
 
-# Starts your model server.
-CMD uvicorn asr_server:app --port 5001 --host 0.0.0.0
+# ✅ Expose FastAPI port
+EXPOSE 5001
+
+# ✅ Launch the FastAPI ASR server
+CMD ["uvicorn", "asr_server:app", "--host", "0.0.0.0", "--port", "5001"]

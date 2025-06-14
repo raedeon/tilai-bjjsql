@@ -1,24 +1,38 @@
-# Dockerfile for building the OCR image.
+# Base image with PyTorch (from NVIDIA NGC)
+FROM nvcr.io/nvidia/pytorch:25.03-py3
 
+# Environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    DEBIAN_FRONTEND=noninteractive
 
-# The base image, an example deep learning VM.
-# For a full list, see https://us-docker.pkg.dev/deeplearning-platform-release/gcr.io/
-# For info, see https://cloud.google.com/deep-learning-vm/docs/images#supported-frameworks
-FROM python:3.12-slim
+# Install system dependencies (for OCR libraries)
+# WARNING: The options to allow unauthenticated packages are a security risk.
+RUN apt-get update -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true && \
+    apt-get install -y --allow-unauthenticated --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libpangocairo-1.0-0 \
+    libcairo2 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    shared-mime-info \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-# Configures settings for the image.
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PIP_ROOT_USER_ACTION=ignore
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Copy application code
 WORKDIR /workspace
+COPY src/ /workspace/
 
-# Installs your dependencies.
-RUN pip install -U pip
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN echo "Pre-downloading models..." && \
+    python -c "from ocr_manager import OCRManager; manager = OCRManager()"
 
-# Copies your source files.
-COPY src .
+EXPOSE 5003
 
-# Starts your model server.
-CMD uvicorn ocr_server:app --port 5003 --host 0.0.0.0
+CMD ["python", "-m", "uvicorn", "ocr_server:app", "--port", "5003", "--host", "0.0.0.0"]

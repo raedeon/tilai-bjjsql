@@ -1,4 +1,6 @@
-# Dependencies for the CV container.
-
 fastapi==0.115.12
 uvicorn[standard]==0.34.2
+
+ultralytics==8.3.134
+opencv-python==4.9.0.80
+numpy==1.26.4

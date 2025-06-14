@@ -2,3 +2,10 @@
 
 fastapi
 uvicorn[standard]
+
+# Core inference dependencies
+torch
+numpy
+gymnasium
+
+./til-25-environment

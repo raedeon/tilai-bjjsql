@@ -68,7 +68,7 @@ def main():
 
     with open(data_dir / "annotations.json", "r") as f:
         annotations = json.load(f)
-    instances = annotations["images"]
+    instances = annotations["images"][:50]
 
     batch_generator = itertools.batched(sample_generator(instances, data_dir), n=BATCH_SIZE)
 

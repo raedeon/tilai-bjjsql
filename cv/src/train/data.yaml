@@ -1,0 +1,27 @@
+# This is a configuration file that tells YOLOv8 where to find dataset and how many object categories is being detected
+
+#yolo task=detect mode=train model=yolov8n.pt data=data.yaml epochs=100 imgsz=640
+
+train: /home/jupyter/tilai-bjjsql/cv/src/train/v1_split/train/images
+val: /home/jupyter/tilai-bjjsql/cv/src/train/v1_split/val/images
+
+nc: 18
+names:
+  - cargo aircraft
+  - commercial aircraft
+  - drone
+  - fighter jet
+  - fighter plane
+  - helicopter
+  - light aircraft
+  - missile
+  - truck
+  - car
+  - tank
+  - bus
+  - van
+  - cargo ship
+  - yacht
+  - cruise ship
+  - warship
+  - sailboat
