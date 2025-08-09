@@ -1,5 +1,13 @@
 # 🏆 DSTA BRAINHACK 2025 TIL-AI 🚀
 
+![alt text](https://img.shields.io/badge/DSTA%20Brainhack%202025-Top%208%20Finalist-brightgreen?style=for-the-badge)
+
+![alt text](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+
+![alt text](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+
+![alt text](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+
 Welcome to our Team BJJSQL's repository for **DSTA Brainhack TIL-AI 2025**! 
 This project showcases our collective effort in tackling a diverse set of AI and machine learning problems—from audio processing and computer vision to reinforcement learning and optimization in the hackathon.
 
